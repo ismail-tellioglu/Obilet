@@ -6,9 +6,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Objects.Dtos
+namespace Objects.ApiRequestObjects
 {
-    public  class SessionRequestDto
+    public class SessionRequestDto
     {
         public int Type { get; set; }
         public Browser Browser { get; set; }

@@ -4,27 +4,36 @@
         width: 70%;
         background-color: #F3F3F3;
     }
-
     .card-header {
         background-color: #2F4EB4;
     }
-
+    .result-col-width {
+        min-width: 600px !important;
+    }
     .inner-card {
         width: 100%;
         background-color: #F3F3F3;
     }
+    .back-icon{
+        width:30px;
+        height:30px;
+        padding-right:10px;
+        cursor:pointer;
+    }
 </style>
 
 <div class="d-flex justify-content-center mt-2">
-    <div class=col-3 d-flex justify-content-start">
-
-        <a href="/"><img id="back-img" width="30px" height="30px" src="/back.svg" style="cursor: pointer;"></img></a>
+    <div class="col-2">
+        &nbsp;
     </div>
-    <div class="col-7">
+    <div class="col-8 result-col-width d-flex justify-content-center">
         @if (Model.Count > 0)
         {
             <div class="card text-white  mb-3 outer-card">
-                <div class="card-header card-header">@ViewBag.journeyInfo</div>
+                <div class="card-header card-header">
+                    <a href="/"><img id="back-img"  src="/back.svg" class="back-icon"></img></a>
+                     @ViewBag.journeyInfo
+                </div>
                 <div class="card-body justify-content-center">
 
                     @foreach (var item in Model)
@@ -33,12 +42,14 @@
                             <div class="row">
                                 <div class="col-7">
                                     <div class="card-body">
-                                        <h5 class="card-title" style="color:blue">@item.DepartureTime -> @item.ArrivalTime </h5>
+                                        <h5 class="card-title" style="color:blue">
+                                            @item.DepartureTime -> @item.ArrivalTime
+                                        </h5>
                                         <p class="card-text" style="color:black">@item.Origin-@item.Destination</p>
 
                                     </div>
                                 </div>
-                                <div class="col-4 d-flex  mt-2" >
+                                <div class="col-4 d-flex  mt-2">
                                     <div class="card bg-danger mb-3" style="max-height:50px;">
                                         <div class="card-body" style="padding-top: 1em;">
                                             <p class="card-text" style="color:white">@String.Format("{0:0.00}",item.Price) @(item.Currency == "TRY" ? "TL" : item.Currency)</p>
@@ -57,36 +68,7 @@
             <div class="row"> No journey has been found for selected options. </div>
         }
     </div>
-    @* <div class="row">
-    @if (Model.Count > 0)
-    {
-    <table class="table">
-    <thead>
-    <tr>
-    <th scope="col">Origin</th>
-    <th scope="col">Destination</th>
-    <th scope="col">Departure Time</th>
-    <th scope="col">Arrical Time</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model)
-    {
-    <tr>
-
-    <td>@item.Origin</td>
-    <td>@item.Destination</td>
-    <td>@item.DepartureTime</td>
-    <td>@item.ArrivalTime</td>
-    </tr>
-    }
-
-    </tbody>
-    </table>
-    }
-    else
-    {
-    <div class="row"> No journey has been found for selected options. </div>
-    }
-    </div> *@
+    <div class="col-2">
+        &nbsp;
+    </div>
 </div>

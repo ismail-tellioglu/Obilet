@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Objects.Dtos
+namespace Objects.ApiRequestObjects
 {
-    public  class GetAllBusLocationsRequestDto: ApiRequestBase
+    public class GetAllBusLocationsRequestDto : ApiRequestBase
     {
         public DateTime Date { get; set; }
     }

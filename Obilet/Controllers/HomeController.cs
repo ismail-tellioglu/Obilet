@@ -2,8 +2,8 @@
 using Business;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Caching.Memory;
 using Obilet.Models;
+using Objects.ApiRequestObjects;
 using Objects.Dtos;
 using System.Diagnostics;
 using System.Globalization;
@@ -23,16 +23,19 @@ namespace Obilet.Controllers
             this._mapper = mapper;
             this._busJourneyService = busJourneyService;
             this._businessHelper = helper;
-          
-        }
 
+        }
+        /// <summary>
+        /// Set session variables: device-id session-id
+        /// </summary>
+        /// <returns></returns>
         private async Task SetSessionId()
         {
             var userAgent = HttpContext.Request.Headers["User-Agent"];
             var uaParser = Parser.GetDefault();
             ClientInfo c = uaParser.Parse(userAgent);
 
-            var response=  await _businessHelper.GetSession(new SessionRequestDto
+            var response = await _businessHelper.GetSession(new SessionRequestDto
             {
                 Browser = new Browser
                 {
@@ -56,7 +59,7 @@ namespace Obilet.Controllers
                 await SetSessionId();
             }
             SearchBusModel md = new SearchBusModel();
-           
+
             var locations = await _busJourneyService.GetLocations(HttpContext.Session.GetString("session-id"), HttpContext.Session.GetString("device-id"));
 
 
@@ -81,7 +84,7 @@ namespace Obilet.Controllers
             else
                 md.DestinationId = int.Parse(md.OriginList.First().Value);
             //if there is a serach date in cookies and if it is not earlier than date of today set that date
-            if (Request.Cookies["last-chosen-departuretime"] != null && DateTime.Parse(Request.Cookies["last-chosen-departuretime"]).Date>=DateTime.Now.Date)
+            if (Request.Cookies["last-chosen-departuretime"] != null && DateTime.Parse(Request.Cookies["last-chosen-departuretime"]).Date >= DateTime.Now.Date)
             {
                 md.DepartureTime = DateTime.Parse(Request.Cookies["last-chosen-departuretime"]);
             }
@@ -90,11 +93,16 @@ namespace Obilet.Controllers
 
             if (!string.IsNullOrEmpty(errorMessage))
             {
-                ViewBag.error=errorMessage;
+                ViewBag.error = errorMessage;
             }
             return View(md);
         }
 
+        /// <summary>
+        /// returns available journeys
+        /// </summary>
+        /// <param name="criterias"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> SearchBus(SearchBusModel criterias)
         {
@@ -104,14 +112,14 @@ namespace Obilet.Controllers
 
             if (criterias.OriginId == criterias.DestinationId)
                 return RedirectToAction("Index", new { errorMessage = "Origin and destination can not be same location" });
-            SearchBusJourneyRequestDto request= _mapper.Map<SearchBusJourneyRequestDto>(criterias);
-            List< JourneyDto> journeys=   await this._busJourneyService.SearchBusJourney(HttpContext.Session.GetString("session-id"), HttpContext.Session.GetString("device-id"),
+            SearchBusJourneyRequestDto request = _mapper.Map<SearchBusJourneyRequestDto>(criterias);
+            List<JourneyDto> journeys = await this._busJourneyService.SearchBusJourney(HttpContext.Session.GetString("session-id"), HttpContext.Session.GetString("device-id"),
                 request);
             if (journeys.Count > 0)
             {
                 var locations = await _busJourneyService.GetLocations(HttpContext.Session.GetString("session-id"), HttpContext.Session.GetString("device-id"));
-                
-                ViewBag.journeyInfo = $"{locations.Where(p=>p.LocationId==criterias.OriginId).First().Location}-" +
+
+                ViewBag.journeyInfo = $"{locations.Where(p => p.LocationId == criterias.OriginId).First().Location}-" +
                     $"{locations.Where(p => p.LocationId == criterias.DestinationId).First().Location}" +
                     $" {criterias.DepartureTime.ToString("dd MMMM", CultureInfo.CreateSpecificCulture("en-ss"))} {criterias.DepartureTime.DayOfWeek.ToString("G")}";
             }
